@@ -1,0 +1,13 @@
+type User {
+  user_id: ID!
+  name: String!
+  role: String!
+}
+
+type Query {
+  users: [User]
+}
+
+type Mutation {
+  addUser(name: String!, role: String!): User
+}
