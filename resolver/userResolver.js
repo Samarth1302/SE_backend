@@ -1,6 +1,6 @@
 const User = require("../models/User");
 
-const resolvers = {
+const userResolver = {
   Query: {
     users: async () => {
       try {
@@ -29,4 +29,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+module.exports = userResolver;

@@ -1,7 +1,7 @@
 type User {
-  user_id: ID!
-  name: String!
-  role: String!
+  id: ID
+  name: String
+  role: String
 }
 
 type Query {

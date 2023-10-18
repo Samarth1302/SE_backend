@@ -1,0 +1,20 @@
+type Menu {
+  id: ID!
+  itemName: String!
+  itemDescription: String
+  itemPrice: Float!
+}
+
+input MenuInput {
+  itemName: String!
+  itemDescription: String
+  itemPrice: Float!
+}
+
+type Query {
+  menu: [Menu]
+}
+
+type Mutation {
+  createMenuItem(input: MenuInput!): Menu
+}

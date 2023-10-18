@@ -1,12 +1,29 @@
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
-const typeDefs = require("./schema");
-const resolvers = require("./resolver");
+const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
+const userSchema = require("./schema/userSchema.graphql");
+const orderSchema = require("./schema/orderSchema.graphql");
+const menuSchema = require("./schema/menuSchema.graphql");
+const userResolver = require("./resolver/userResolver");
+const orderResolver = require("./resolver/orderResolver");
+const menuResolver = require("./resolver/menuResolver");
 const connectDB = require("./config/database");
 
+const mergedTypeDefs = mergeTypeDefs([userSchema, orderSchema, menuSchema]);
+const mergedResolvers = mergeResolvers([
+  userResolver,
+  orderResolver,
+  menuResolver,
+]);
+
+const schema = makeExecutableSchema({
+  typeDefs: mergedTypeDefs,
+  resolvers: mergedResolvers,
+});
+
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  schema,
 });
 
 const app = express();
