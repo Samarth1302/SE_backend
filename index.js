@@ -1,37 +1,34 @@
 const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
-const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
-const { makeExecutableSchema } = require("@graphql-tools/schema");
-const userSchema = require("./schema/userSchema.graphql");
-const orderSchema = require("./schema/orderSchema.graphql");
-const menuSchema = require("./schema/menuSchema.graphql");
-const userResolver = require("./resolver/userResolver");
-const orderResolver = require("./resolver/orderResolver");
-const menuResolver = require("./resolver/menuResolver");
-const connectDB = require("./config/database");
+const { ApolloServer, gql } = require("apollo-server-express");
+const typeDefs = require("./typeDefs");
+const resolvers = require("./resolvers");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-const mergedTypeDefs = mergeTypeDefs([userSchema, orderSchema, menuSchema]);
-const mergedResolvers = mergeResolvers([
-  userResolver,
-  orderResolver,
-  menuResolver,
-]);
+const startServer = async () => {
+  const app = express();
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+  });
 
-const schema = makeExecutableSchema({
-  typeDefs: mergedTypeDefs,
-  resolvers: mergedResolvers,
-});
+  await server.start();
+  server.applyMiddleware({ app });
 
-const server = new ApolloServer({
-  schema,
-});
+  const PORT = process.env.PORT || 3000;
 
-const app = express();
-server.applyMiddleware({ app });
-connectDB();
+  mongoose
+    .connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => {
+      console.log("MongoDB Connected");
+      app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+      });
+    })
+    .catch((err) => console.error(`Error: ${err.message}`));
+};
 
-const PORT = process.env.PORT || 3001;
-
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+startServer();
