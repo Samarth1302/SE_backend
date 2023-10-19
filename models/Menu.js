@@ -8,6 +8,9 @@ const MenuSchema = new mongoose.Schema({
   itemDescription: {
     type: String,
   },
+  itemCategory: {
+    type: String,
+  },
   itemPrice: {
     type: Number,
     required: true,

@@ -5,12 +5,14 @@ module.exports = gql`
     id: ID!
     itemName: String!
     itemDescription: String
+    itemCategory: String
     itemPrice: Float!
   }
 
   input MenuInput {
     itemName: String!
     itemDescription: String
+    itemCategory: String
     itemPrice: Float!
   }
 
@@ -22,7 +24,7 @@ module.exports = gql`
 
   type Order {
     id: ID!
-    customerName: String!
+    customerID: String!
     items: [Item!]!
     totalAmount: Float!
     status: String!
@@ -30,7 +32,7 @@ module.exports = gql`
   }
 
   input OrderInput {
-    customerName: String!
+    customerID: String!
     items: [ItemInput!]!
     totalAmount: Float!
     status: String

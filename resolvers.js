@@ -35,10 +35,11 @@ const resolver = {
   Mutation: {
     createMenuItem: async (_, { input }) => {
       try {
-        const { itemName, itemDescription, itemPrice } = input;
+        const { itemName, itemDescription, itemCategory, itemPrice } = input;
         const newMenuItem = new Menu({
           itemName,
           itemDescription,
+          itemCategory,
           itemPrice,
         });
         const result = await newMenuItem.save();
@@ -63,9 +64,9 @@ const resolver = {
     },
     createOrder: async (_, { input }) => {
       try {
-        const { customerName, items, totalAmount, status } = input;
+        const { customerID, items, totalAmount, status } = input;
         const newOrder = new Order({
-          customerName,
+          customerID,
           items,
           totalAmount,
           status,
