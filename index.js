@@ -9,7 +9,10 @@ require("dotenv").config();
 const auth = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   const path = req.originalUrl || req.url;
-  if (path === "/signup" || path === "/login") {
+  if (
+    req.body.operationName === "signup" ||
+    req.body.operationName === "login"
+  ) {
     next();
   } else {
     if (!token) {
