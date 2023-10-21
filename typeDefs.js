@@ -46,18 +46,25 @@ module.exports = gql`
 
   type User {
     id: ID
-    name: String
+    username: String
+    email: String
     role: String
   }
 
   type Query {
-    users: [User]
+    me: User
     menu: [Menu]
     orders: [Order]
   }
 
   type Mutation {
-    addUser(name: String!, role: String!): User
+    signup(
+      username: String!
+      email: String!
+      password: String!
+      role: String!
+    ): User
+    login(email: String!, password: String!): String
     createMenuItem(input: MenuInput!): Menu
     createOrder(input: OrderInput!): Order
   }

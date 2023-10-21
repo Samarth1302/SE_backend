@@ -76,7 +76,12 @@ const resolver = {
         throw new Error("Incorrect password");
       }
       return jsonwebtoken.sign(
-        { id: user.id, name: user.name, email: user.email, role: user.role },
+        {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+        },
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
       );
