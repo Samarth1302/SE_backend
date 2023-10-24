@@ -1,18 +1,91 @@
 const Menu = require("./models/Menu");
 const User = require("./models/User");
 const Order = require("./models/Orders");
+const { ApolloError } = require("apollo-server-errors");
+const { authenticate } = require("./middleware/auth");
 const bcrypt = require("bcrypt");
-const jsonwebtoken = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const resolver = {
-  Query: {
-    me: async (_, { user }) => {
-      if (!user) {
-        throw new Error("You are not authenticated!");
+const resolvers = {
+  Mutation: {
+    async signup(_, { signupInput: { username, email, password, role } }) {
+      const oldUser = await User.findOne({ email });
+      if (oldUser)
+        throw new ApolloError(
+          "User with same email already exists",
+          "USER_ALREADY_EXISTS"
+        );
+      try {
+        var encryptedPassword = await bcrypt.hash(password, 10);
+        const user = new User({
+          username: username,
+          email: email.toLowerCase(),
+          password: encryptedPassword,
+          role: role,
+        });
+
+        const token = jwt.sign(
+          { user_id: user._id, email, role },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "10h",
+          }
+        );
+        user.token = token;
+        const res = await user.save();
+
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      } catch (err) {
+        console.error(err);
+        throw err;
       }
-      return await User.findById(user.id);
     },
+    login: async (_, { loginInput: { email, password } }) => {
+      const user = await User.findOne({ email });
+
+      if (user && (await bcrypt.compare(password, user.password))) {
+        const token = jwt.sign(
+          { user_id: user._id, email, role },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "10h",
+          }
+        );
+
+        user.token = token;
+
+        return {
+          id: user.id,
+          ...user._doc,
+        };
+      } else {
+        throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
+      }
+    },
+
+    createOrder: async (_, { input }) => {
+      try {
+        const { customerID, items, totalAmount, status } = input;
+        const newOrder = new Order({
+          customerID,
+          items,
+          totalAmount,
+          status,
+        });
+        const result = await newOrder.save();
+        return result;
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
+    },
+  },
+  Query: {
+    user: (_, { ID }) => User.findById(ID),
 
     menu: async () => {
       try {
@@ -28,75 +101,6 @@ const resolver = {
       try {
         const orders = await Order.find();
         return orders;
-      } catch (err) {
-        console.error(err);
-        throw err;
-      }
-    },
-  },
-  Mutation: {
-    createMenuItem: async (_, { input }) => {
-      try {
-        const { itemName, itemDescription, itemCategory, itemPrice } = input;
-        const newMenuItem = new Menu({
-          itemName,
-          itemDescription,
-          itemCategory,
-          itemPrice,
-        });
-        const result = await newMenuItem.save();
-        return result;
-      } catch (err) {
-        console.error(err);
-        throw err;
-      }
-    },
-    signup: async (_, { username, email, password, role }) => {
-      try {
-        const user = await User.create({
-          username,
-          email,
-          password: await bcrypt.hash(password, 10),
-          role,
-        });
-        return user;
-      } catch (err) {
-        console.error(err);
-        throw err;
-      }
-    },
-    login: async (_, { email, password }) => {
-      const user = await User.findOne({ email });
-      if (!user) {
-        throw new Error("No user with that email");
-      }
-
-      const valid = await bcrypt.compare(password, user.password);
-      if (!valid) {
-        throw new Error("Incorrect password");
-      }
-      return jsonwebtoken.sign(
-        {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "1d" }
-      );
-    },
-    createOrder: async (_, { input }) => {
-      try {
-        const { customerID, items, totalAmount, status } = input;
-        const newOrder = new Order({
-          customerID,
-          items,
-          totalAmount,
-          status,
-        });
-        const result = await newOrder.save();
-        return result;
       } catch (err) {
         console.error(err);
         throw err;
