@@ -66,45 +66,10 @@ const resolvers = {
         throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
       }
     },
-
-    createOrder: async (_, { input }) => {
-      try {
-        const { customerID, items, totalAmount, status } = input;
-        const newOrder = new Order({
-          customerID,
-          items,
-          totalAmount,
-          status,
-        });
-        const result = await newOrder.save();
-        return result;
-      } catch (err) {
-        console.error(err);
-        throw err;
-      }
-    },
   },
   Query: {
     user: (_, { ID }) => User.findById(ID),
-
-    menu: async () => {
-      try {
-        const menu = await Menu.find();
-        return menu;
-      } catch (err) {
-        console.error(err);
-        throw err;
-      }
-    },
-
-    orders: async () => {
-      try {
-        const orders = await Order.find();
-        return orders;
-      } catch (err) {
-        console.error(err);
-        throw err;
-      }
-    },
   },
 };
+
+module.exports = resolvers;

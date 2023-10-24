@@ -17,3 +17,5 @@ const authenticate = (context) => {
     }
   } else throw new Error("Token must be bearer token");
 };
+
+module.exports = authenticate;
