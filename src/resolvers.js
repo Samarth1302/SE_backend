@@ -1,8 +1,8 @@
-const Menu = require("./models/Menu");
-const User = require("./models/User");
-const Order = require("./models/Orders");
+const Menu = require("../models/Menu");
+const User = require("../models/User");
+const Order = require("../models/Orders");
 const { ApolloError } = require("apollo-server-errors");
-const { authenticate } = require("./middleware/auth");
+const { authenticate } = require("../middleware/auth");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
