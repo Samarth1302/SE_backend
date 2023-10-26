@@ -5,11 +5,11 @@ const ItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  itemDescription: {
+  itemDesc: {
     type: String,
   },
   itemImage: { data: Buffer, contentType: String },
-  itemCategory: {
+  itemGrp: {
     type: String,
     required: true,
   },

@@ -41,7 +41,10 @@ const resolvers = {
         };
       } catch (err) {
         console.error(err);
-        throw err;
+        throw new ApolloError(
+          "User couldn't be saved to system",
+          "USER_NOT_SAVED"
+        );
       }
     },
     login: async (_, { loginInput: { email, password } }) => {
@@ -66,9 +69,42 @@ const resolvers = {
         throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
       }
     },
+    addItem: async (
+      _,
+      { itemInput: { itemName, itemDesc, itemImage, itemGrp, itemPrice } }
+    ) => {
+      await user.authenticate();
+      const oldItem = await Item.findOne({ itemName });
+      if (oldItem)
+        throw new ApolloError(
+          "Item with same name already exists",
+          "ITEM_EXISTS"
+        );
+      try {
+        const item = new Item({
+          itemName: itemName,
+          itemDesc: itemDesc,
+          itemImage: itemImage,
+          itemGrp: itemGrp,
+          itemPrice: itemPrice,
+        });
+        const res = await item.save();
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      } catch (err) {
+        console.error(err);
+        throw new ApolloError(
+          "Item couldn't be added to menu",
+          "ITEM_NOT_ADDED"
+        );
+      }
+    },
   },
   Query: {
-    user: (_, { ID }) => User.findById(ID),
+    user: (_, { email }) => User.findById(email),
+    item: (_, { itemName }) => Item.findById(itemName),
   },
 };
 
