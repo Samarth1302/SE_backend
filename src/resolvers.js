@@ -1,4 +1,4 @@
-const Menu = require("../models/Menu");
+const Item = require("../models/Item");
 const User = require("../models/User");
 const Order = require("../models/Orders");
 const { ApolloError } = require("apollo-server-errors");
