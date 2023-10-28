@@ -11,6 +11,6 @@ If trying to addItem it must be an admin with relevant jwt token and the token s
 
 Registered Users:-
 
-CUSTOMER: email-sam@gmail.com, password- sam123
+CUSTOMER: email- sam@gmail.com, password- sam123
 
 ADMIN: email- admin@se.com, password- adminse
