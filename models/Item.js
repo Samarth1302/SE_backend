@@ -4,6 +4,7 @@ const ItemSchema = new mongoose.Schema({
   itemName: {
     type: String,
     required: true,
+    unique: true,
   },
   itemDesc: {
     type: String,
@@ -16,6 +17,10 @@ const ItemSchema = new mongoose.Schema({
   itemPrice: {
     type: Number,
     required: true,
+  },
+  itemRtng: {
+    type: Number,
+    default: NULL,
   },
 });
 

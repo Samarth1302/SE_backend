@@ -71,9 +71,10 @@ const resolvers = {
     },
     addItem: async (
       _,
-      { itemInput: { itemName, itemDesc, itemImage, itemGrp, itemPrice } }
+      { itemInput: { itemName, itemDesc, itemImage, itemGrp, itemPrice } },
+      context
     ) => {
-      await user.authenticate();
+      const user = authenticate(context);
       const oldItem = await Item.findOne({ itemName });
       if (oldItem)
         throw new ApolloError(
@@ -81,6 +82,12 @@ const resolvers = {
           "ITEM_EXISTS"
         );
       try {
+        if (user.role !== "admin") {
+          throw new ApolloError(
+            "Only admins can add items to the menu",
+            "ACTION_FORBIDDEN"
+          );
+        }
         const item = new Item({
           itemName: itemName,
           itemDesc: itemDesc,
@@ -103,8 +110,9 @@ const resolvers = {
     },
   },
   Query: {
-    user: (_, { email }) => User.findById(email),
-    item: (_, { itemName }) => Item.findById(itemName),
+    user: (_, { email }) => User.findOne(email),
+    item: (_, { itemName }) => Item.findOne(itemName),
+    allItems: () => Item.find(),
   },
 };
 
