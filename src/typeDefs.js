@@ -2,9 +2,8 @@ const { gql } = require("apollo-server");
 
 module.exports = gql`
   type Query {
-    user(email: String): User
-    item(itemName: String): Item
-    allItems: Item
+    user(param: String): User
+    allItems: [Item]
   }
 
   type Mutation {
