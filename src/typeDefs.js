@@ -4,11 +4,13 @@ module.exports = gql`
   type Query {
     user(email: String): User
     item(itemName: String): Item
+    allItems: Item
   }
 
   type Mutation {
     signup(signupInput: signupInput): User
     login(loginInput: loginInput): User
+    addItem(itemInput: itemInput): Item
   }
 
   type User {
@@ -34,20 +36,15 @@ module.exports = gql`
   type Item {
     itemName: String
     itemDesc: String
-    itemImage: Image
+    itemImage: String
     itemGrp: String
     itemPrice: Float
-  }
-
-  type Image {
-    data: String
-    contentType: String
   }
 
   input itemInput {
     itemName: String
     itemDesc: String
-    itemImage: Image
+    itemImage: String
     itemGrp: String
     itemPrice: Float
   }

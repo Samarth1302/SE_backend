@@ -9,7 +9,7 @@ const ItemSchema = new mongoose.Schema({
   itemDesc: {
     type: String,
   },
-  itemImage: { data: Buffer, contentType: String },
+  itemImage: { type: String, required: true },
   itemGrp: {
     type: String,
     required: true,
@@ -20,7 +20,7 @@ const ItemSchema = new mongoose.Schema({
   },
   itemRtng: {
     type: Number,
-    default: NULL,
+    default: 5,
   },
 });
 
