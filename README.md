@@ -14,3 +14,5 @@ Registered Users:-
 CUSTOMER: email- sam@gmail.com, password- sam123
 
 ADMIN: email- admin@se.com, password- adminse
+
+MONGODB_URI= mongodb+srv://vercel-admin-user:carterz2023@cluster0.rl12qcb.mongodb.net/cafe_mngmt
