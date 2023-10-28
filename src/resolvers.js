@@ -110,28 +110,19 @@ const resolvers = {
     },
   },
   Query: {
-    user: async (_, { param }) => {
+    user: async (_, { email }) => {
       try {
-        const user = await User.findOne({ param }).select(
-          "username email role"
-        );
+        const user = await User.findOne({ email });
         return user;
       } catch (err) {
         console.error(err);
         throw new ApolloError("Error finding the user", "USER_FIND_ERROR");
       }
     },
-    allItems: async (_, { param }) => {
+    allItems: async () => {
       try {
-        if (param) {
-          const item = await Item.findOne({ param }).select(
-            "itemName itemDesc itemImage itemGrp itemPrice"
-          );
-          return item;
-        } else {
-          const allItems = await Item.find();
-          return allItems;
-        }
+        const allItems = await Item.find();
+        return allItems;
       } catch (err) {
         console.error(err);
         throw new ApolloError("Error fetching items", "ITEM_FETCH_ERROR");
