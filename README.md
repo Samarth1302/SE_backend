@@ -1,7 +1,7 @@
 # SE_backend
 Backend API service for Cafe Management System built using GraphQL API's and Node.js libraries. MongoDB used and hosted on MongoDB Atlas.
 
-Deployed API - [https://cafemgmt-se-project.koyeb.app/](https://cafemgmt-se-project.koyeb.app/)   !!!!!{AVOID SENDING REQUESTS TO THE DEPLOYED APP}
+Deployed API - [https://cafe-mgmt.onrender.com](https://cafe-mgmt.onrender.com)  !!!!!{AVOID SENDING REQUESTS TO THE DEPLOYED APP}
 
 Apollo server will be easy to interact with and perform GraphQL queries.
 
