@@ -1,7 +1,7 @@
 const Item = require("../models/Item");
 const User = require("../models/User");
 const Order = require("../models/Orders");
-const { ApolloError } = require("apollo-server-errors");
+const { ApolloError } = require("@apollo/server");
 const { authenticate } = require("../middleware/auth");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");

@@ -1,4 +1,5 @@
-const { ApolloServer } = require("apollo-server");
+const { ApolloServer } = require("@apollo/server");
+const { startStandaloneServer } = require("@apollo/server/standalone");
 const typeDefs = require("./typeDefs");
 const resolvers = require("./resolvers");
 const mongoose = require("mongoose");
@@ -12,16 +13,22 @@ const server = new ApolloServer({
   context: ({ req }) => ({ req }),
 });
 
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log("MongoDB Connected");
-    return server.listen(PORT);
-  })
-  .then((res) => {
-    console.log(`Server up and running at ${res.url}`);
-  })
-  .catch((err) => console.error(`Error: ${err.message}`));
+
+    const { url } = await startStandaloneServer(server, {
+      context: async ({ req }) => ({ req }),
+      listen: { port: PORT },
+    });
+    console.log(`Server running at ${url}`);
+  } catch (error) {
+    console.error("Server error: ", error);
+  }
+}
+
+startServer();
