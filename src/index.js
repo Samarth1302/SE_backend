@@ -22,7 +22,6 @@ async function startServer() {
     console.log("MongoDB Connected");
 
     const { url } = await startStandaloneServer(server, {
-      context: async ({ req }) => ({ req }),
       listen: { port: PORT },
     });
     console.log(`Server running at ${url}`);

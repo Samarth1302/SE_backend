@@ -24,7 +24,6 @@ module.exports = gql`
     username: String
     email: String
     password: String
-    role: String
   }
 
   input loginInput {

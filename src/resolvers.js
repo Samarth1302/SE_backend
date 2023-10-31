@@ -9,7 +9,7 @@ require("dotenv").config();
 
 const resolvers = {
   Mutation: {
-    async signup(_, { signupInput: { username, email, password, role } }) {
+    async signup(_, { signupInput: { username, email, password } }) {
       const oldUser = await User.findOne({ email });
       if (oldUser)
         throw new ApolloError(
@@ -22,7 +22,6 @@ const resolvers = {
           username: username,
           email: email.toLowerCase(),
           password: encryptedPassword,
-          role: role,
         });
 
         const token = jwt.sign(
