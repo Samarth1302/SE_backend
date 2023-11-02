@@ -9,7 +9,7 @@ require("dotenv").config();
 
 const resolvers = {
   Mutation: {
-    async signup(_, { signupInput: { username, email, password } }) {
+    signup: async (_, { signupInput: { username, email, password } }) => {
       const oldUser = await User.findOne({ email });
       if (oldUser)
         throw new ApolloError(
