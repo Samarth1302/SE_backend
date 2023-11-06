@@ -65,7 +65,11 @@ const resolvers = {
           ...user._doc,
         };
       } else {
-        throw new ApolloError("Incorrect Password", "INCORRECT_PASSWORD");
+        const error = new ApolloError(
+          "Incorrect Password",
+          "INCORRECT_PASSWORD"
+        );
+        throw error;
       }
     },
     addItem: async (
