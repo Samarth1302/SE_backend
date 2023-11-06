@@ -5,8 +5,6 @@ const resolvers = require("./resolvers");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const PORT = process.env.PORT || 3000;
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -22,7 +20,7 @@ async function startServer() {
     console.log("MongoDB Connected");
 
     const { url } = await startStandaloneServer(server, {
-      listen: { port: PORT },
+      listen: { port: 4000 },
     });
     console.log(`Server running at ${url}`);
   } catch (error) {
