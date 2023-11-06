@@ -1,7 +1,7 @@
 const Item = require("../models/Item");
 const User = require("../models/User");
 const Order = require("../models/Orders");
-const { ApolloError } = require("@apollo/server");
+const { GraphQLError } = require("graphql");
 const { authenticate } = require("../middleware/auth");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -12,10 +12,12 @@ const resolvers = {
     signup: async (_, { signupInput: { username, email, password } }) => {
       const oldUser = await User.findOne({ email });
       if (oldUser)
-        throw new ApolloError(
-          "User with same email already exists",
-          "USER_ALREADY_EXISTS"
-        );
+        throw new GraphQLError("User with same email already exists", {
+          extensions: {
+            code: "USER_ALREADY_EXISTS",
+          },
+        });
+
       try {
         var encryptedPassword = await bcrypt.hash(password, 10);
         const user = new User({
@@ -40,16 +42,22 @@ const resolvers = {
         };
       } catch (err) {
         console.error(err);
-        throw new ApolloError(
-          "User couldn't be saved to system",
-          "USER_NOT_SAVED"
-        );
+        throw new GraphQLError("User couldn't be saved to system", {
+          extensions: {
+            code: "USER_NOT_SAVED",
+          },
+        });
       }
     },
     login: async (_, { loginInput: { email, password } }) => {
       const user = await User.findOne({ email });
-
-      if (user && (await bcrypt.compare(password, user.password))) {
+      if (!user) {
+        throw new GraphQLError("Can't find such user", {
+          extensions: {
+            code: "USER_NOT_FOUND",
+          },
+        });
+      } else if (await bcrypt.compare(password, user.password)) {
         const token = jwt.sign(
           { user_id: user._id, email: user.email, role: user.role },
           process.env.JWT_SECRET,
@@ -65,11 +73,11 @@ const resolvers = {
           ...user._doc,
         };
       } else {
-        const error = new ApolloError(
-          "Incorrect Password",
-          "INCORRECT_PASSWORD"
-        );
-        throw error;
+        throw new GraphQLError("Incorrect Password", {
+          extensions: {
+            code: "INCORRECT_PASSWORD",
+          },
+        });
       }
     },
     addItem: async (
@@ -80,15 +88,21 @@ const resolvers = {
       const user = authenticate(context);
       const oldItem = await Item.findOne({ itemName });
       if (oldItem)
-        throw new ApolloError(
-          "Item with same name already exists",
-          "ITEM_EXISTS"
-        );
+        throw new GraphQLError("Item with same name already exists", {
+          extensions: {
+            code: "ITEM_EXISTS",
+          },
+        });
+
       try {
         if (user.role !== "admin") {
-          throw new ApolloError(
-            "Only admins can add items to the menu",
-            "ACTION_FORBIDDEN"
+          throw new GraphQLError(
+            "Only admins can add items to the menu Password",
+            {
+              extensions: {
+                code: "ACTION_FORBIDDEN",
+              },
+            }
           );
         }
         const item = new Item({
@@ -104,11 +118,11 @@ const resolvers = {
           ...res._doc,
         };
       } catch (err) {
-        console.error(err);
-        throw new ApolloError(
-          "Item couldn't be added to menu",
-          "ITEM_NOT_ADDED"
-        );
+        throw new GraphQLError("Item couldn't be added to menu", {
+          extensions: {
+            code: "ITEM_NOT_ADDED",
+          },
+        });
       }
     },
   },
@@ -118,8 +132,11 @@ const resolvers = {
         const user = await User.findOne({ email });
         return user;
       } catch (err) {
-        console.error(err);
-        throw new ApolloError("Error finding the user", "USER_FIND_ERROR");
+        throw new GraphQLError("Error finding the user", {
+          extensions: {
+            code: "USER_NOT_FOUND",
+          },
+        });
       }
     },
     allItems: async () => {
@@ -127,8 +144,11 @@ const resolvers = {
         const allItems = await Item.find();
         return allItems;
       } catch (err) {
-        console.error(err);
-        throw new ApolloError("Error fetching items", "ITEM_FETCH_ERROR");
+        throw new GraphQLError("Error fetching items", {
+          extensions: {
+            code: "FETCH_ERROR",
+          },
+        });
       }
     },
   },

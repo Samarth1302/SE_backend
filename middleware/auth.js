@@ -1,11 +1,11 @@
-const { AuthenticationError } = require("@apollo/server");
+const { GraphQLError } = require("graphql");
 const jwt = require("jsonwebtoken");
 
 exports.authenticate = (context) => {
   const authHeader = context.req.headers.authorization;
 
   if (!authHeader) {
-    throw new Error("Authorisation header not provided");
+    throw new GraphQLError("Authorisation header not provided");
   }
   const token = authHeader?.split(" ")[1];
   if (token) {
@@ -13,7 +13,7 @@ exports.authenticate = (context) => {
       const user = jwt.verify(token, process.env.JWT_SECRET);
       return user;
     } catch (error) {
-      throw new AuthenticationError("Invalid Token");
+      throw new GraphQLError("Invalid Token");
     }
-  } else throw new Error("Token must be bearer token");
+  } else throw new GraphQLError("Token must be bearer token");
 };
