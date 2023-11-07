@@ -41,7 +41,6 @@ const resolvers = {
           ...res._doc,
         };
       } catch (err) {
-        console.error(err);
         throw new GraphQLError("User couldn't be saved to system", {
           extensions: {
             code: "USER_NOT_SAVED",
