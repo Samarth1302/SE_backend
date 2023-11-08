@@ -32,6 +32,7 @@ module.exports = gql`
   }
 
   type Item {
+    id: ID
     itemName: String
     itemDesc: String
     itemImage: String
