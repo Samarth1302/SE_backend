@@ -26,10 +26,15 @@ const resolvers = {
         });
 
         const token = jwt.sign(
-          { user_id: user._id, email: user.email, role: user.role },
+          {
+            user_id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+          },
           process.env.JWT_SECRET,
           {
-            expiresIn: "1d",
+            expiresIn: "1d", //diff for diff roles
           }
         );
         user.token = token;
@@ -57,10 +62,15 @@ const resolvers = {
         });
       } else if (await bcrypt.compare(password, user.password)) {
         const token = jwt.sign(
-          { user_id: user._id, email: user.email, role: user.role },
+          {
+            user_id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+          },
           process.env.JWT_SECRET,
           {
-            expiresIn: "1d",
+            expiresIn: "1d", //diff for diff roles
           }
         );
 
