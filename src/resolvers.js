@@ -50,7 +50,7 @@ const resolvers = {
     login: async (_, { loginInput: { email, password } }) => {
       const user = await User.findOne({ email });
       if (!user) {
-        throw new GraphQLError("Can't find such user", {
+        throw new GraphQLError("Can't find such user. Signup first", {
           extensions: {
             code: "USER_NOT_FOUND",
           },
@@ -94,14 +94,11 @@ const resolvers = {
 
       try {
         if (user.role !== "admin") {
-          throw new GraphQLError(
-            "Only admins can add items to the menu Password",
-            {
-              extensions: {
-                code: "ACTION_FORBIDDEN",
-              },
-            }
-          );
+          throw new GraphQLError("Only admins can add items to the menu", {
+            extensions: {
+              code: "ACTION_FORBIDDEN",
+            },
+          });
         }
         const item = new Item({
           itemName: itemName,
@@ -116,11 +113,14 @@ const resolvers = {
           ...res._doc,
         };
       } catch (err) {
-        throw new GraphQLError("Item couldn't be added to menu", {
-          extensions: {
-            code: "ITEM_NOT_ADDED",
-          },
-        });
+        throw new GraphQLError(
+          "Item couldn't be added to menu. Check if any field is empty",
+          {
+            extensions: {
+              code: "ITEM_NOT_ADDED",
+            },
+          }
+        );
       }
     },
     placeOrder: async (_, { orderInput }, contextValue) => {
