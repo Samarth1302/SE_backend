@@ -2,7 +2,6 @@ const Item = require("../models/Item");
 const User = require("../models/User");
 const Order = require("../models/Order");
 const { GraphQLError } = require("graphql");
-const authenticate = require("../middleware/auth");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -125,8 +124,7 @@ const resolvers = {
       }
     },
     placeOrder: async (_, { orderInput }, contextValue) => {
-      const user = authenticate(contextValue);
-
+      const user = contextValue.user;
       try {
         const existingUser = await User.findOne({ _id: user.user_id });
         if (!existingUser) {

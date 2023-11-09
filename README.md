@@ -6,7 +6,7 @@ Deployed API - [https://cafe-mgmt-se-project.koyeb.app/](https://cafe-mgmt-se-pr
 
 Apollo server will be easy to interact with and perform GraphQL queries.
 
-If trying to addItem it must be an admin with relevant jwt token and the token should be sent as "Authorization" header with value of <your_JWT_TOKEN>
+If trying to addItem it must be an admin with relevant jwt token and the token should be sent as "Authorization" header with value = your_JWT_TOKEN
 
 Registered Users:-
 
