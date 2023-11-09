@@ -1,19 +1,36 @@
 const { GraphQLError } = require("graphql");
 const jwt = require("jsonwebtoken");
 
-exports.authenticate = (context) => {
-  const authHeader = context.req.headers.authorization;
-
-  if (!authHeader) {
-    throw new GraphQLError("Authorisation header not provided");
-  }
-  const token = authHeader?.split(" ")[1];
-  if (token) {
-    try {
+const getUser = async (token) => {
+  try {
+    if (token) {
       const user = jwt.verify(token, process.env.JWT_SECRET);
       return user;
-    } catch (error) {
-      throw new GraphQLError("Invalid Token");
     }
-  } else throw new GraphQLError("Token must be bearer token");
+    return null;
+  } catch (error) {
+    return null;
+  }
 };
+
+const context = async ({ req, res }) => {
+  if (req.body.operationName === "IntrospectionQuery") {
+    return {};
+  }
+  if (
+    req.body.operationName === "Signup" ||
+    req.body.operationName === "Login" ||
+    req.body.operationName === "AllItems"
+  ) {
+    return {};
+  }
+
+  const token = req.headers.authorization || "";
+  const user = await getUser(token);
+  if (!user) {
+    throw new GraphQLError("User is not Authenticated");
+  }
+  return { user };
+};
+
+module.exports = context;

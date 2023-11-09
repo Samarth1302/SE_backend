@@ -1,8 +1,8 @@
 const Item = require("../models/Item");
 const User = require("../models/User");
-const Order = require("../models/Orders");
+const Order = require("../models/Order");
 const { GraphQLError } = require("graphql");
-const { authenticate } = require("../middleware/auth");
+const authenticate = require("../middleware/auth");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -30,7 +30,7 @@ const resolvers = {
           { user_id: user._id, email: user.email, role: user.role },
           process.env.JWT_SECRET,
           {
-            expiresIn: "10h",
+            expiresIn: "1d",
           }
         );
         user.token = token;
@@ -61,7 +61,7 @@ const resolvers = {
           { user_id: user._id, email: user.email, role: user.role },
           process.env.JWT_SECRET,
           {
-            expiresIn: "10h",
+            expiresIn: "1d",
           }
         );
 
@@ -82,9 +82,9 @@ const resolvers = {
     addItem: async (
       _,
       { itemInput: { itemName, itemDesc, itemImage, itemGrp, itemPrice } },
-      context
+      contextValue
     ) => {
-      const user = authenticate(context);
+      const user = contextValue.user;
       const oldItem = await Item.findOne({ itemName });
       if (oldItem)
         throw new GraphQLError("Item with same name already exists", {
@@ -124,9 +124,44 @@ const resolvers = {
         });
       }
     },
+    placeOrder: async (_, { orderInput }, contextValue) => {
+      const user = authenticate(contextValue);
+
+      try {
+        const existingUser = await User.findOne({ _id: user.user_id });
+        if (!existingUser) {
+          throw new GraphQLError("Users need to login first", {
+            extensions: {
+              code: "USER_NOT_LOGGEDIN",
+            },
+          });
+        }
+        const order = new Order({
+          userID: user.user_id,
+          customerName: orderInput.customerName,
+          items: orderInput.items,
+          totalAmount: orderInput.totalAmount,
+          status: orderInput.status || "pending",
+          createdAt: new Date().toISOString(),
+        });
+
+        const res = await order.save();
+
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      } catch (err) {
+        throw new GraphQLError("Order couldn't be placed", {
+          extensions: {
+            code: "ORDER_NOT_PLACED",
+          },
+        });
+      }
+    },
   },
   Query: {
-    user: async (_, { email }) => {
+    user: async (_, { email }, contextValue) => {
       try {
         const user = await User.findOne({ email });
         return user;
@@ -138,7 +173,7 @@ const resolvers = {
         });
       }
     },
-    allItems: async () => {
+    allItems: async (_, args) => {
       try {
         const allItems = await Item.find();
         return allItems;

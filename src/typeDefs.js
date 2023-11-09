@@ -10,6 +10,7 @@ module.exports = gql`
     signup(signupInput: signupInput): User
     login(loginInput: loginInput): User
     addItem(itemInput: itemInput): Item
+    placeOrder(orderInput: orderInput): Order
   }
 
   type User {
@@ -46,5 +47,29 @@ module.exports = gql`
     itemImage: String
     itemGrp: String
     itemPrice: Float
+  }
+
+  type Order {
+    customerName: String
+    items: [OrderItem]
+    totalAmount: Float
+    status: String
+    createdAt: String
+  }
+  type OrderItem {
+    name: String
+    quantity: Int
+    price: Float
+  }
+  input orderInput {
+    customerName: String
+    items: [orderItemInput]
+    totalAmount: Float
+    status: String
+  }
+  input orderItemInput {
+    name: String
+    quantity: Int
+    price: Float
   }
 `;
