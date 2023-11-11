@@ -13,7 +13,7 @@ const getUser = async (token) => {
   }
 };
 
-const context = async ({ req, res }) => {
+const context = async ({ req }) => {
   const exempt_ops = ["IntrospectionQuery", "Signup", "Login", "AllItems"];
 
   if (exempt_ops.includes(req.body.operationName)) {
