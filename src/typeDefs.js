@@ -64,12 +64,11 @@ module.exports = gql`
   input orderInput {
     customerName: String
     items: [orderItemInput]
-    totalAmount: Float
-    status: String
+    totalAmount: Int
   }
   input orderItemInput {
     name: String
     quantity: Int
-    price: Float
+    price: Int
   }
 `;

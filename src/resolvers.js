@@ -133,7 +133,11 @@ const resolvers = {
         );
       }
     },
-    placeOrder: async (_, { orderInput }, contextValue) => {
+    placeOrder: async (
+      _,
+      { orderInput: { customerName, items, totalAmount } },
+      contextValue
+    ) => {
       const user = contextValue.user;
       try {
         const existingUser = await User.findOne({ _id: user.user_id });
@@ -146,10 +150,10 @@ const resolvers = {
         }
         const order = new Order({
           userID: user.user_id,
-          customerName: orderInput.customerName,
-          items: orderInput.items,
-          totalAmount: orderInput.totalAmount,
-          status: orderInput.status || "pending",
+          customerName: customerName,
+          items: items,
+          totalAmount: totalAmount,
+          status: "pending",
           createdAt: new Date().toISOString(),
         });
 
