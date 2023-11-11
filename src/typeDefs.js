@@ -4,6 +4,7 @@ module.exports = gql`
   type Query {
     user(email: String): User
     allItems: [Item]
+    userOrders: [Order]
   }
 
   type Mutation {
@@ -50,6 +51,7 @@ module.exports = gql`
   }
 
   type Order {
+    userID: ID
     customerName: String
     items: [OrderItem]
     totalAmount: Float
@@ -64,11 +66,11 @@ module.exports = gql`
   input orderInput {
     customerName: String
     items: [orderItemInput]
-    totalAmount: Int
+    totalAmount: Float
   }
   input orderItemInput {
     name: String
     quantity: Int
-    price: Int
+    price: Float
   }
 `;

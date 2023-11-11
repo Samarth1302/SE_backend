@@ -197,6 +197,19 @@ const resolvers = {
         });
       }
     },
+    userOrders: async (_, __, contextValue) => {
+      const user = contextValue.user;
+      try {
+        const userOrders = await Order.find({ userID: user.user_id });
+        return userOrders;
+      } catch (err) {
+        throw new GraphQLError("Error fetching user orders", {
+          extensions: {
+            code: "FETCH_USER_ORDERS_ERROR",
+          },
+        });
+      }
+    },
   },
 };
 
