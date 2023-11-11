@@ -51,7 +51,7 @@ module.exports = gql`
   }
 
   type Order {
-    userID: ID
+    id: ID
     customerName: String
     items: [OrderItem]
     totalAmount: Float
