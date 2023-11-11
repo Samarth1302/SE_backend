@@ -24,7 +24,6 @@ const resolvers = {
           email: email.toLowerCase(),
           password: encryptedPassword,
         });
-
         const token = jwt.sign(
           {
             user_id: user._id,
@@ -34,7 +33,7 @@ const resolvers = {
           },
           process.env.JWT_SECRET,
           {
-            expiresIn: "1d", //diff for diff roles
+            expiresIn: "1d",
           }
         );
         user.token = token;
@@ -61,21 +60,35 @@ const resolvers = {
           },
         });
       } else if (await bcrypt.compare(password, user.password)) {
-        const token = jwt.sign(
-          {
-            user_id: user._id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-          },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: "1d", //diff for diff roles
-          }
-        );
-
-        user.token = token;
-
+        if (user.role === "customer") {
+          const token = jwt.sign(
+            {
+              user_id: user._id,
+              username: user.username,
+              email: user.email,
+              role: user.role,
+            },
+            process.env.JWT_SECRET,
+            {
+              expiresIn: "1d",
+            }
+          );
+          user.token = token;
+        } else {
+          const token = jwt.sign(
+            {
+              user_id: user._id,
+              username: user.username,
+              email: user.email,
+              role: user.role,
+            },
+            process.env.JWT_SECRET,
+            {
+              expiresIn: "30d",
+            }
+          );
+          user.token = token;
+        }
         return {
           id: user.id,
           ...user._doc,
@@ -200,8 +213,13 @@ const resolvers = {
     userOrders: async (_, __, contextValue) => {
       const user = contextValue.user;
       try {
-        const userOrders = await Order.find({ userID: user.user_id });
-        return userOrders;
+        if (user.role === "customer") {
+          const userOrders = await Order.find({ userID: user.user_id });
+          return userOrders;
+        } else {
+          const userOrders = await Order.find();
+          return userOrders;
+        }
       } catch (err) {
         throw new GraphQLError("Error fetching user orders", {
           extensions: {
