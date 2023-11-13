@@ -14,6 +14,8 @@ module.exports = gql`
     placeOrder(orderInput: orderInput): Order
   }
 
+  scalar DateTime
+
   type User {
     username: String
     email: String
@@ -56,7 +58,7 @@ module.exports = gql`
     items: [OrderItem]
     totalAmount: Float
     status: String
-    createdAt: String
+    createdAt: DateTime
   }
   type OrderItem {
     name: String
