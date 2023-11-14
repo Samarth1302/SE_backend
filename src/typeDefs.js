@@ -59,6 +59,8 @@ module.exports = gql`
     totalAmount: Float
     status: String
     createdAt: DateTime
+    orderApprovedAt: DateTime
+    orderCompletedAt: DateTime
   }
   type OrderItem {
     name: String
