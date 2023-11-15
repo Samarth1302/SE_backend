@@ -2,7 +2,6 @@ const { gql } = require("graphql-tag");
 
 module.exports = gql`
   type Query {
-    user(email: String): User
     allItems: [Item]
     userOrders: [Order]
   }
@@ -10,8 +9,10 @@ module.exports = gql`
   type Mutation {
     signup(signupInput: signupInput): User
     login(loginInput: loginInput): User
+    registerEmployee(signupInput: signupInput): User
     addItem(itemInput: itemInput): Item
     placeOrder(orderInput: orderInput): Order
+    confirmOrder(orderId: ID!): Order
   }
 
   scalar DateTime
