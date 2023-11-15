@@ -184,90 +184,92 @@ const resolvers = {
         });
       }
     },
+    registerEmployee: async (
+      _,
+      { signupInput: { username, email, password } },
+      contextValue
+    ) => {
+      const adminUser = contextValue.user;
+
+      try {
+        if (adminUser.role !== "admin") {
+          throw new GraphQLError("Only admins can register employees", {
+            extensions: {
+              code: "ACTION_FORBIDDEN",
+            },
+          });
+        }
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+          throw new GraphQLError("User with the same email already exists", {
+            extensions: {
+              code: "USER_ALREADY_EXISTS",
+            },
+          });
+        }
+        const encryptedPassword = await bcrypt.hash(password, 10);
+
+        const employee = new User({
+          username,
+          email: email.toLowerCase(),
+          password: encryptedPassword,
+          role: "employee",
+        });
+        const res = await employee.save();
+
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      } catch (err) {
+        throw new GraphQLError("Employee registration failed", {
+          extensions: {
+            code: "EMPLOYEE_REGISTRATION_ERROR",
+          },
+        });
+      }
+    },
+
+    confirmOrder: async (_, { orderId }, contextValue) => {
+      const user = contextValue.user;
+
+      try {
+        if (user.role !== "admin" && user.role !== "employee") {
+          throw new GraphQLError("Only admins/employees can confirm orders", {
+            extensions: {
+              code: "ACTION_FORBIDDEN",
+            },
+          });
+        }
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+          throw new GraphQLError("Order not found", {
+            extensions: {
+              code: "ORDER_NOT_FOUND",
+            },
+          });
+        }
+
+        order.status = "Confirmed";
+        order.orderApprovedAt = new Date().toISOString();
+
+        const res = await order.save();
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      } catch (err) {
+        throw new GraphQLError("Order confirmation failed", {
+          extensions: {
+            code: "ORDER_CONFIRMATION_ERROR",
+          },
+        });
+      }
+    },
   },
-  registerEmployee: async (
-    _,
-    { signupInput: { username, email, password } },
-    contextValue
-  ) => {
-    const adminUser = contextValue.user;
 
-    try {
-      if (adminUser.role !== "admin") {
-        throw new GraphQLError("Only admins can register employees", {
-          extensions: {
-            code: "ACTION_FORBIDDEN",
-          },
-        });
-      }
-
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        throw new GraphQLError("User with the same email already exists", {
-          extensions: {
-            code: "USER_ALREADY_EXISTS",
-          },
-        });
-      }
-      const encryptedPassword = await bcrypt.hash(password, 10);
-
-      const employee = new User({
-        username,
-        email: email.toLowerCase(),
-        password: encryptedPassword,
-        role: "employee",
-      });
-      const res = await employee.save();
-
-      return {
-        id: res.id,
-        ...res._doc,
-      };
-    } catch (err) {
-      throw new GraphQLError("Employee registration failed", {
-        extensions: {
-          code: "EMPLOYEE_REGISTRATION_ERROR",
-        },
-      });
-    }
-  },
-  confirmOrder: async (_, { orderId }, contextValue) => {
-    const user = contextValue.user;
-
-    try {
-      if (user.role !== "admin" && user.role !== "employee") {
-        throw new GraphQLError("Only admins/employees can confirm orders", {
-          extensions: {
-            code: "ACTION_FORBIDDEN",
-          },
-        });
-      }
-
-      const order = await Order.findById(orderId);
-      if (!order) {
-        throw new GraphQLError("Order not found", {
-          extensions: {
-            code: "ORDER_NOT_FOUND",
-          },
-        });
-      }
-
-      order.status = "Confirmed";
-      order.orderApprovedAt = new Date().toISOString();
-
-      const res = await order.save();
-      return {
-        id: res.id,
-        ...res._doc,
-      };
-    } catch (err) {
-      throw new GraphQLError("Order confirmation failed", {
-        extensions: {
-          code: "ORDER_CONFIRMATION_ERROR",
-        },
-      });
-    }
-  },
   Query: {
     allItems: async (_) => {
       try {
