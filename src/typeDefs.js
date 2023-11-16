@@ -18,6 +18,13 @@ module.exports = gql`
 
   scalar DateTime
 
+  enum OrderStatus {
+    Pending
+    Confirmed
+    Completed
+    Cancelled
+  }
+
   type User {
     username: String
     email: String
@@ -59,7 +66,7 @@ module.exports = gql`
     customerName: String
     items: [OrderItem]
     totalAmount: Float
-    status: String
+    status: OrderStatus
     createdAt: DateTime
     orderApprovedAt: DateTime
     orderCompletedAt: DateTime

@@ -301,7 +301,7 @@ const resolvers = {
         });
       }
     },
-    findOrder: async (_, { orderId }) => {
+    findOrder: async (_, { orderId }, __) => {
       try {
         const order = await Order.findById(orderId);
         if (!order) {
