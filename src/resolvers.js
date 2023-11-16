@@ -166,7 +166,7 @@ const resolvers = {
           customerName: customerName,
           items: items,
           totalAmount: totalAmount,
-          status: "pending",
+          status: "Pending",
           createdAt: new Date().toISOString(),
         });
 
