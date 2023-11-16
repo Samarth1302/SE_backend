@@ -301,6 +301,25 @@ const resolvers = {
         });
       }
     },
+    findOrder: async (_, { orderId }) => {
+      try {
+        const order = await Order.findById(orderId);
+        if (!order) {
+          throw new GraphQLError("Order not found", {
+            extensions: {
+              code: "ORDER_NOT_FOUND",
+            },
+          });
+        }
+        return order;
+      } catch (err) {
+        throw new GraphQLError("Error finding order", {
+          extensions: {
+            code: "FIND_ORDER_ERROR",
+          },
+        });
+      }
+    },
   },
 };
 

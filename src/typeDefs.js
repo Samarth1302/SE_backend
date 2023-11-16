@@ -4,6 +4,7 @@ module.exports = gql`
   type Query {
     allItems: [Item]
     userOrders: [Order]
+    findOrder(orderId: ID!): Order
   }
 
   type Mutation {
