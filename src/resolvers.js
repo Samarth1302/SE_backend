@@ -252,8 +252,10 @@ const resolvers = {
           });
         }
 
-        order.status = "Confirmed";
-        order.orderApprovedAt = new Date().toISOString();
+        if (order.status !== "Confirmed") {
+          order.status = "Confirmed";
+          order.orderApprovedAt = new Date().toISOString();
+        }
 
         const res = await order.save();
         return {
