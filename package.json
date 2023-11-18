@@ -19,6 +19,7 @@
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.6.2"
+    "mongoose": "^7.6.2",
+    "node-cron": "^3.0.3"
   }
 }
