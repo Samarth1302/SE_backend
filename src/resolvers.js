@@ -270,6 +270,45 @@ const resolvers = {
         });
       }
     },
+    completeOrder: async (_, { orderId }, contextValue) => {
+      const user = contextValue.user;
+
+      try {
+        if (user.role !== "admin" && user.role !== "employee") {
+          throw new GraphQLError("Only admins/employees can confirm orders", {
+            extensions: {
+              code: "ACTION_FORBIDDEN",
+            },
+          });
+        }
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+          throw new GraphQLError("Order not found", {
+            extensions: {
+              code: "ORDER_NOT_FOUND",
+            },
+          });
+        }
+
+        if (order.status !== "Completed") {
+          order.status = "Completed";
+          order.orderApprovedAt = new Date().toISOString();
+        }
+
+        const res = await order.save();
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      } catch (err) {
+        throw new GraphQLError("Order updation failed", {
+          extensions: {
+            code: "ORDER_UPDATION_ERROR",
+          },
+        });
+      }
+    },
   },
 
   Query: {
