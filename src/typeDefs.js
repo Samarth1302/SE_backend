@@ -13,8 +13,7 @@ module.exports = gql`
     registerEmployee(signupInput: signupInput): User
     addItem(itemInput: itemInput): Item
     placeOrder(orderInput: orderInput): Order
-    confirmOrder(orderId: ID!): Order
-    completeOrder(orderId: ID!): Order
+    changeOrderStatus(orderId: ID!, newStatus: String!): Order
   }
 
   scalar DateTime

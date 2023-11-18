@@ -231,7 +231,7 @@ const resolvers = {
       }
     },
 
-    confirmOrder: async (_, { orderId }, contextValue) => {
+    changeOrderStatus: async (_, { orderId, newStatus }, contextValue) => {
       const user = contextValue.user;
 
       try {
@@ -251,58 +251,20 @@ const resolvers = {
             },
           });
         }
-
-        if (order.status !== "Confirmed") {
+        if (newStatus === "Confirmed" && order.status !== "Confirmed") {
           order.status = "Confirmed";
           order.orderApprovedAt = new Date().toISOString();
-        }
-
-        const res = await order.save();
-        return {
-          id: res.id,
-          ...res._doc,
-        };
-      } catch (err) {
-        throw new GraphQLError("Order confirmation failed", {
-          extensions: {
-            code: "ORDER_CONFIRMATION_ERROR",
-          },
-        });
-      }
-    },
-    completeOrder: async (_, { orderId }, contextValue) => {
-      const user = contextValue.user;
-
-      try {
-        if (user.role !== "admin" && user.role !== "employee") {
-          throw new GraphQLError("Only admins/employees can confirm orders", {
-            extensions: {
-              code: "ACTION_FORBIDDEN",
-            },
-          });
-        }
-
-        const order = await Order.findById(orderId);
-        if (!order) {
-          throw new GraphQLError("Order not found", {
-            extensions: {
-              code: "ORDER_NOT_FOUND",
-            },
-          });
-        }
-
-        if (order.status !== "Completed") {
+        } else if (newStatus === "Completed" && order.status !== "Completed") {
           order.status = "Completed";
-          order.orderApprovedAt = new Date().toISOString();
+          order.orderCompletedAt = new Date().toISOString();
         }
-
         const res = await order.save();
         return {
           id: res.id,
           ...res._doc,
         };
       } catch (err) {
-        throw new GraphQLError("Order updation failed", {
+        throw new GraphQLError("Order status update failed", {
           extensions: {
             code: "ORDER_UPDATION_ERROR",
           },
