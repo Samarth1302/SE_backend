@@ -10,7 +10,7 @@ const cleanOrders = async () => {
     );
     await Order.updateMany(
       {
-        status: "Confirmed",
+        status: "Preparing",
       },
       {
         $set: {

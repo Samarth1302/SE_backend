@@ -20,7 +20,9 @@ module.exports = gql`
 
   enum OrderStatus {
     Pending
-    Confirmed
+    Preparing
+    Prepared
+    Served
     Completed
     Cancelled
   }

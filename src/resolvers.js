@@ -251,8 +251,8 @@ const resolvers = {
             },
           });
         }
-        if (newStatus === "Confirmed" && order.status !== "Confirmed") {
-          order.status = "Confirmed";
+        if (newStatus === "Preparing" && order.status !== "Preparing") {
+          order.status = "Preparing";
           order.orderApprovedAt = new Date().toISOString();
         } else if (newStatus === "Completed" && order.status !== "Completed") {
           order.status = "Completed";
