@@ -35,7 +35,7 @@ const resolvers = {
         const token = jwt.sign(
           {
             user_id: user._id,
-            username: user.username,
+            username: user.username.toLowerCase(),
             email: user.email,
             role: user.role,
           },
@@ -72,7 +72,7 @@ const resolvers = {
           const token = jwt.sign(
             {
               user_id: user._id,
-              username: user.username,
+              username: user.username.toLowerCase(),
               email: user.email,
               role: user.role,
             },
@@ -86,7 +86,7 @@ const resolvers = {
           const token = jwt.sign(
             {
               user_id: user._id,
-              username: user.username,
+              username: user.username.toLowerCase(),
               email: user.email,
               role: user.role,
             },
@@ -298,7 +298,7 @@ const resolvers = {
       const user = contextValue.user;
       try {
         if (user.role === "customer") {
-          const userOrders = await Order.find({ userID: user.user_id });
+          const userOrders = await Order.find({ customerName: user.username });
           return userOrders;
         } else {
           const userOrders = await Order.find();
