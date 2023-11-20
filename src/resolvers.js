@@ -262,6 +262,10 @@ const resolvers = {
         if (newStatus === "Preparing" && order.status !== "Preparing") {
           order.status = "Preparing";
           order.orderApprovedAt = new Date().toISOString();
+        } else if (newStatus === "Prepared" && order.status !== "Prepared") {
+          order.status = "Prepared";
+        } else if (newStatus === "Served" && order.status !== "Served") {
+          order.status = "Served";
         } else if (newStatus === "Completed" && order.status !== "Completed") {
           order.status = "Completed";
           order.orderCompletedAt = new Date().toISOString();
@@ -305,7 +309,7 @@ const resolvers = {
           return userOrders;
         }
       } catch (err) {
-        throw new GraphQLError("Error fetching user orders", {
+        throw new GraphQLError("Couldn't fetch user orders", {
           extensions: {
             code: "FETCH_USER_ORDERS_ERROR",
           },
