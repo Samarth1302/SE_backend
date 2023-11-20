@@ -17,6 +17,14 @@ const resolvers = {
           },
         });
 
+      const oldUname = await User.findOne({ username });
+      if (oldUname)
+        throw new GraphQLError("User with same username already exists", {
+          extensions: {
+            code: "USERNAME_ALREADY_EXISTS",
+          },
+        });
+
       try {
         var encryptedPassword = await bcrypt.hash(password, 10);
         const user = new User({
