@@ -23,6 +23,7 @@ module.exports = gql`
     Preparing
     Prepared
     Served
+    Paid
     Completed
     Cancelled
   }

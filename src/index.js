@@ -24,7 +24,6 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB");
     cron.schedule("0 0 * * *", () => {
-      console.log("Running cron job...");
       cleanOrders();
     });
 

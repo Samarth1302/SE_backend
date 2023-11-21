@@ -36,6 +36,7 @@ const OrderSchema = new mongoose.Schema({
       "Preparing",
       "Prepared",
       "Served",
+      "Paid",
       "Completed",
       "Cancelled",
     ],
