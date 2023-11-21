@@ -5,6 +5,7 @@ module.exports = gql`
     allItems: [Item]
     userOrders: [Order]
     findOrder(orderId: ID!): Order
+    getEmployees: [User]
   }
 
   type Mutation {
@@ -28,6 +29,7 @@ module.exports = gql`
   }
 
   type User {
+    id: ID
     username: String
     email: String
     password: String

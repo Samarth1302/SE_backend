@@ -335,6 +335,18 @@ const resolvers = {
         });
       }
     },
+    getEmployees: async () => {
+      try {
+        const employees = await User.find({ role: "employee" });
+        return employees;
+      } catch (err) {
+        throw new GraphQLError("Error fetching employees", {
+          extensions: {
+            code: "FETCH_EMPLOYEES_ERROR",
+          },
+        });
+      }
+    },
   },
 };
 
