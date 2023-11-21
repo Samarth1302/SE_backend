@@ -266,8 +266,6 @@ const resolvers = {
           order.status = "Prepared";
         } else if (newStatus === "Served" && order.status !== "Served") {
           order.status = "Served";
-        } else if (newStatus === "Paid" && order.status !== "Paid") {
-          order.status = "Paid";
         } else if (newStatus === "Completed" && order.status !== "Completed") {
           order.status = "Completed";
           order.orderCompletedAt = new Date().toISOString();
