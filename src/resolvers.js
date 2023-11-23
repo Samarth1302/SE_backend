@@ -283,6 +283,72 @@ const resolvers = {
         });
       }
     },
+    deleteItem: async (_, { itemId }, contextValue) => {
+      const user = contextValue.user;
+      try {
+        if (user.role !== "admin") {
+          throw new GraphQLError("Only admins can delete items from the menu", {
+            extensions: {
+              code: "ACTION_FORBIDDEN",
+            },
+          });
+        }
+
+        const item = await Item.findById(itemId);
+        if (!item) {
+          throw new GraphQLError("Item not found", {
+            extensions: {
+              code: "ITEM_NOT_FOUND",
+            },
+          });
+        }
+
+        await item.deleteOne();
+        return {
+          message: "Item deleted successfully",
+        };
+      } catch (err) {
+        throw new GraphQLError("Item deletion failed", {
+          extensions: {
+            code: "ITEM_DELETION_ERROR",
+          },
+        });
+      }
+    },
+
+    deleteEmployee: async (_, { userId }, contextValue) => {
+      const adminUser = contextValue.user;
+
+      try {
+        if (adminUser.role !== "admin") {
+          throw new GraphQLError("Only admins can delete employees", {
+            extensions: {
+              code: "ACTION_FORBIDDEN",
+            },
+          });
+        }
+
+        const employee = await User.findById(userId);
+        if (!employee) {
+          throw new GraphQLError("Employee not found", {
+            extensions: {
+              code: "EMPLOYEE_NOT_FOUND",
+            },
+          });
+        }
+
+        await employee.deleteOne();
+        return {
+          message: "Employee removed successfully",
+        };
+      } catch (err) {
+        throw new GraphQLError("Employee deletion failed", {
+          extensions: {
+            code: "EMPLOYEE_DELETION_ERROR",
+          },
+        });
+      }
+    },
   },
 
   Query: {

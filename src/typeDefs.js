@@ -15,6 +15,8 @@ module.exports = gql`
     addItem(itemInput: itemInput): Item
     placeOrder(orderInput: orderInput): Order
     changeOrderStatus(orderId: ID!, newStatus: String!): Order
+    deleteItem(itemId: ID!): Item
+    deleteEmployee(userId: ID!): User
   }
 
   scalar DateTime
