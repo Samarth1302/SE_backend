@@ -13,6 +13,18 @@ const SalesSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  numberOfOrdersMonthly: {
+    type: Number,
+    default: 0,
+  },
+  month: {
+    type: Number,
+    required: true,
+  },
+  year: {
+    type: Number,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Sales", SalesSchema);

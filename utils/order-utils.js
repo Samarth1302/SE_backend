@@ -8,16 +8,8 @@ const cleanOrders = async () => {
       },
       { $set: { status: "Cancelled" } }
     );
-    await Order.updateMany(
-      {
-        status: "Preparing",
-      },
-      {
-        $set: {
-          status: "Completed",
-        },
-      }
-    );
+
+    await Order.deleteMany({ status: "Cancelled" });
 
     console.log("Orders cleaned successfully.");
   } catch (error) {

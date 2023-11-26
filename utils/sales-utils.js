@@ -1,47 +1,51 @@
-cron.schedule("0 0 * * *", async () => {
+const mongoose = require("mongoose");
+const Sales = require("../models/Sales");
+
+const calculateSalesData = async () => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
 
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
+    const monthlySalesData = await Sales.aggregate([
+      {
+        $match: {
+          $expr: { $eq: [{ $month: "$date" }, currentMonth] },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$totalSales" },
+          avgOrderCompletionTime: { $avg: "$avgOrderCompletionTime" },
+          numberOfOrders: { $sum: "$numberOfOrdersMonthly" },
+        },
+      },
+    ]);
 
-    const orders = await Order.find({
-      createdAt: { $gte: today, $lt: tomorrow },
-      status: "Completed",
-    });
-
-    const totalSales = orders.reduce(
-      (total, order) => total + order.totalAmount,
-      0
+    await Sales.findOneAndUpdate(
+      { month: currentMonth, year: currentYear },
+      {
+        $set: {
+          totalSales: monthlySalesData.length
+            ? monthlySalesData[0].totalSales
+            : 0,
+          avgOrderCompletionTime: monthlySalesData.length
+            ? monthlySalesData[0].avgOrderCompletionTime
+            : 0,
+          numberOfOrdersMonthly: monthlySalesData.length
+            ? monthlySalesData[0].numberOfOrders
+            : 0,
+          month: currentMonth,
+          year: currentYear,
+        },
+      },
+      { upsert: true }
     );
-    const orderCompletionTimes = orders.map((order) => order.orderCompletedAt);
 
-    const avgOrderCompletionTime =
-      calculateAvgOrderCompletionTime(orderCompletionTimes);
-
-    await Sales.create({
-      date: today,
-      totalSales,
-      orderCompletionTimes,
-      avgOrderCompletionTime,
-    });
-
-    console.log("Daily sales report updated successfully.");
+    console.log("Monthly sales data updated successfully.");
   } catch (error) {
-    console.error("Error updating daily sales report:", error);
+    console.error("Error updating monthly sales data:", error);
   }
-});
+};
 
-function calculateAvgOrderCompletionTime(orderCompletionTimes) {
-  if (orderCompletionTimes.length === 0) {
-    return 0;
-  }
-
-  const totalCompletionTime = orderCompletionTimes.reduce(
-    (total, completionTime) => total + completionTime.getTime(),
-    0
-  );
-
-  return totalCompletionTime / orderCompletionTimes.length;
-}
+module.exports = { calculateSalesData };

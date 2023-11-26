@@ -5,6 +5,7 @@ const resolvers = require("./resolvers");
 const context = require("../middleware/auth");
 const mongoose = require("mongoose");
 const { cleanOrders } = require("../utils/order-utils");
+const { calculateSalesData } = require("../utils/sales-utils");
 const cron = require("node-cron");
 require("dotenv").config();
 
@@ -25,6 +26,9 @@ mongoose
     console.log("Connected to MongoDB");
     cron.schedule("0 0 * * *", () => {
       cleanOrders();
+    });
+    cron.schedule("0 0 1 * *", () => {
+      calculateSalesData();
     });
 
     return startStandaloneServer(server, {
