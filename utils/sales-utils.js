@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Order = require("../models/Order");
 const Sales = require("../models/Sales");
 
 const calculateSalesData = async () => {
@@ -6,18 +7,23 @@ const calculateSalesData = async () => {
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
 
-    const monthlySalesData = await Sales.aggregate([
+    const monthlySalesData = await Order.aggregate([
       {
         $match: {
-          $expr: { $eq: [{ $month: "$date" }, currentMonth] },
+          $expr: { $eq: [{ $month: "$createdAt" }, currentMonth] },
+          status: "Completed",
         },
       },
       {
         $group: {
           _id: null,
-          totalSales: { $sum: "$totalSales" },
-          avgOrderCompletionTime: { $avg: "$avgOrderCompletionTime" },
-          numberOfOrders: { $sum: "$numberOfOrdersMonthly" },
+          totalSales: { $sum: "$totalAmount" },
+          avgOrderCompletionTime: {
+            $avg: {
+              $subtract: ["$orderServedAt", "$createdAt"],
+            },
+          },
+          numberOfOrders: { $sum: 1 },
         },
       },
     ]);
