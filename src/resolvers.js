@@ -261,10 +261,10 @@ const resolvers = {
         }
         if (newStatus === "Preparing" && order.status !== "Preparing") {
           order.status = "Preparing";
-          order.orderApprovedAt = new Date().toISOString();
         } else if (newStatus === "Prepared" && order.status !== "Prepared") {
           order.status = "Prepared";
         } else if (newStatus === "Served" && order.status !== "Served") {
+          order.orderServedAt = new Date().toISOString();
           order.status = "Served";
         } else if (newStatus === "Completed" && order.status !== "Completed") {
           order.status = "Completed";

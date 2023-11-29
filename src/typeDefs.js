@@ -74,7 +74,7 @@ module.exports = gql`
     totalAmount: Float
     status: OrderStatus
     createdAt: DateTime
-    orderApprovedAt: DateTime
+    orderServedAt: DateTime
     orderCompletedAt: DateTime
   }
   type OrderItem {

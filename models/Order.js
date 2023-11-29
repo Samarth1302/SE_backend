@@ -44,7 +44,7 @@ const OrderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  orderApprovedAt: {
+  orderServedAt: {
     type: Date,
     default: null,
   },
