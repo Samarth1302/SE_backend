@@ -12,10 +12,10 @@ require("dotenv").config();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  cors: {
-    origin: "http://localhost:3000/",
-    credentials: true,
-  },
+  // cors: {
+  //   origin: "http://localhost:3000/",
+  //   credentials: true,
+  // },
 });
 mongoose
   .connect(process.env.MONGODB_URI, {
