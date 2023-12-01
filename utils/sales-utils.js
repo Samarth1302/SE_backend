@@ -4,13 +4,24 @@ const Sales = require("../models/Sales");
 
 const calculateSalesData = async () => {
   try {
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
+    const currentMonthStart = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1
+    );
+
+    const lastMonthEnd = new Date(currentMonthStart);
+    lastMonthEnd.setDate(0);
 
     const monthlySalesData = await Order.aggregate([
       {
         $match: {
-          $expr: { $eq: [{ $month: "$createdAt" }, currentMonth] },
+          $expr: {
+            $and: [
+              { $gte: ["$createdAt", lastMonthEnd] },
+              { $lt: ["$createdAt", currentMonthStart] },
+            ],
+          },
           status: "Completed",
         },
       },
@@ -29,7 +40,7 @@ const calculateSalesData = async () => {
     ]);
 
     await Sales.findOneAndUpdate(
-      { month: currentMonth, year: currentYear },
+      { month: lastMonthEnd.getMonth() + 1, year: lastMonthEnd.getFullYear() },
       {
         $set: {
           totalSales: monthlySalesData.length
@@ -41,8 +52,8 @@ const calculateSalesData = async () => {
           numberOfOrdersMonthly: monthlySalesData.length
             ? monthlySalesData[0].numberOfOrders
             : 0,
-          month: currentMonth,
-          year: currentYear,
+          month: lastMonthEnd.getMonth() + 1,
+          year: lastMonthEnd.getFullYear(),
         },
       },
       { upsert: true }
