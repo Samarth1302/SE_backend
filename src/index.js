@@ -27,7 +27,7 @@ mongoose
     cron.schedule("0 0 * * *", () => {
       cleanOrders();
     });
-    cron.schedule("0 0 1 * *", () => {
+    cron.schedule("0 0 0 7 12 *", () => {
       calculateSalesData();
     });
 
