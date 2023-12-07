@@ -4,56 +4,66 @@ const Sales = require("../models/Sales");
 
 const calculateSalesData = async () => {
   try {
+    const lastMonthStart = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth() - 1,
+      1,
+      0,
+      0,
+      0
+    );
+
     const currentMonthStart = new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
-      1
+      1,
+      0,
+      0,
+      0
     );
-
-    const lastMonthEnd = new Date(currentMonthStart);
-    lastMonthEnd.setDate(0);
 
     const monthlySalesData = await Order.aggregate([
       {
         $match: {
-          $expr: {
-            $and: [
-              { $gte: ["$createdAt", lastMonthEnd] },
-              { $lt: ["$createdAt", currentMonthStart] },
-            ],
+          createdAt: {
+            $gte: lastMonthStart,
+            $lt: currentMonthStart,
           },
           status: "Completed",
         },
       },
       {
-        $group: {
-          _id: null,
-          totalSales: { $sum: "$totalAmount" },
-          avgOrderCompletionTime: {
-            $avg: {
-              $subtract: ["$orderServedAt", "$createdAt"],
-            },
-          },
-          numberOfOrders: { $sum: 1 },
+        $project: {
+          _id: 0,
+          totalAmount: 1,
+          orderServedAt: 1,
+          createdAt: 1,
         },
       },
     ]);
 
     await Sales.findOneAndUpdate(
-      { month: lastMonthEnd.getMonth() + 1, year: lastMonthEnd.getFullYear() },
+      {
+        month: lastMonthStart.getMonth() + 1,
+        year: lastMonthStart.getFullYear(),
+      },
       {
         $set: {
           totalSales: monthlySalesData.length
-            ? monthlySalesData[0].totalSales
+            ? monthlySalesData.reduce(
+                (acc, order) => acc + order.totalAmount,
+                0
+              )
             : 0,
           avgOrderCompletionTime: monthlySalesData.length
-            ? monthlySalesData[0].avgOrderCompletionTime
+            ? monthlySalesData.reduce(
+                (acc, order) => acc + (order.orderServedAt - order.createdAt),
+                0
+              ) / monthlySalesData.length
             : 0,
-          numberOfOrdersMonthly: monthlySalesData.length
-            ? monthlySalesData[0].numberOfOrders
-            : 0,
-          month: lastMonthEnd.getMonth() + 1,
-          year: lastMonthEnd.getFullYear(),
+          numberOfOrdersMonthly: monthlySalesData.length,
+          month: lastMonthStart.getMonth() + 1,
+          year: lastMonthStart.getFullYear(),
         },
       },
       { upsert: true }
