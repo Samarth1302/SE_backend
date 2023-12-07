@@ -1,16 +1,20 @@
-/*const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 const sendEmail = async (to, subject, html) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASSWORD,
+      user: process.env.USER_EMAIL,
+      pass: process.env.APP_PASS,
     },
   });
 
   const mailOptions = {
-    from: process.env.EMAIL,
+    from: {
+      name: "Cafe Manager",
+      address: process.env.USER_EMAIL,
+    },
     to,
     subject,
     html,
@@ -21,9 +25,7 @@ const sendEmail = async (to, subject, html) => {
     console.log("Email sent:", info.response);
   } catch (error) {
     console.error("Email sending error:", error);
-    throw new Error("Email sending failed");
   }
 };
 
 module.exports = { sendEmail };
-*/

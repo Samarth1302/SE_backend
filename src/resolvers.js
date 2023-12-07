@@ -4,6 +4,8 @@ const Order = require("../models/Order");
 const { GraphQLError } = require("graphql");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { sendEmail } = require("../utils/nodemailer");
+const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 
 const resolvers = {
@@ -46,6 +48,14 @@ const resolvers = {
         );
         user.token = token;
         const res = await user.save();
+
+        const emailSubject = "Welcome to Cafe ";
+        const emailHTML = `
+        <p>Hello ${username}</p>
+        <p>Thank you for signing up with our Cafe. Your role is ${user.role}</p>
+        <p>Have a great meal.</p>
+      `;
+        await sendEmail(email, emailSubject, emailHTML);
 
         return {
           id: res.id,
@@ -348,6 +358,34 @@ const resolvers = {
           },
         });
       }
+    },
+    forgotPassword: async (_, { email }) => {
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw new GraphQLError("User not found with the provided email", {
+          extensions: {
+            code: "USER_NOT_FOUND",
+          },
+        });
+      }
+      const newPassword = generateRandomPassword();
+      const encryptedPassword = await bcrypt.hash(newPassword, 10);
+
+      user.password = encryptedPassword;
+      await user.save();
+
+      const emailSubject = "New Password";
+      const emailHTML = `
+    <p>Hello ${user.username},</p>
+    <p>Your new password is: ${newPassword}</p>
+    <p>After logging in, we recommend changing your password.</p>
+  `;
+      await sendEmail(user.email, emailSubject, emailHTML);
+
+      return {
+        success: true,
+        message: "Check your mail and spam inbox for new password.",
+      };
     },
   },
 

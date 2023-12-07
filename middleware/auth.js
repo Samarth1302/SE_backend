@@ -20,6 +20,7 @@ const context = async ({ req }) => {
     "Login",
     "AllItems",
     "GetEmployees",
+    "ForgotPassword",
   ];
 
   if (exempt_ops.includes(req.body.operationName)) {
