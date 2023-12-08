@@ -4,9 +4,9 @@ require("dotenv").config();
 const sendEmail = async (to, subject, html) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
-    port: 465,
+    port: 587,
     host: "smtp.gmail.com",
-    secure: true,
+    secure: false,
     auth: {
       user: process.env.USER_EMAIL,
       pass: process.env.APP_PASS,
