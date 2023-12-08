@@ -5,7 +5,7 @@ const { GraphQLError } = require("graphql");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { sendEmail } = require("../utils/nodemailer");
-const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 require("dotenv").config();
 
 const resolvers = {
@@ -368,7 +368,7 @@ const resolvers = {
           },
         });
       }
-      const newPassword = generateRandomPassword();
+      const newPassword = crypto.randomBytes(8).toString("hex");
       const encryptedPassword = await bcrypt.hash(newPassword, 10);
 
       user.password = encryptedPassword;
@@ -386,6 +386,49 @@ const resolvers = {
         success: true,
         message: "Check your mail and spam inbox for new password.",
       };
+    },
+    changePassword: async (
+      _,
+      { currentPassword, newPassword },
+      contextValue
+    ) => {
+      const user = contextValue.user;
+
+      try {
+        if (!user) {
+          throw new GraphQLError("User not authenticated", {
+            extensions: {
+              code: "USER_NOT_AUTHENTICATED",
+            },
+          });
+        }
+
+        const passwordMatch = await bcrypt.compare(
+          currentPassword,
+          user.password
+        );
+        if (!passwordMatch) {
+          throw new GraphQLError("Incorrect current password", {
+            extensions: {
+              code: "INCORRECT_CURRENT_PASSWORD",
+            },
+          });
+        }
+        const encryptedNewPassword = await bcrypt.hash(newPassword, 10);
+        user.password = encryptedNewPassword;
+        await user.save();
+
+        return {
+          success: true,
+          message: "Password changed successfully",
+        };
+      } catch (err) {
+        throw new GraphQLError("Password change failed", {
+          extensions: {
+            code: "PASSWORD_CHANGE_ERROR",
+          },
+        });
+      }
     },
   },
 

@@ -18,6 +18,10 @@ module.exports = gql`
     deleteItem(itemId: ID!): Item
     deleteEmployee(userId: ID!): User
     forgotPassword(email: String!): ForgotPasswordResponse
+    changePassword(
+      currentPassword: String
+      newPassword: String
+    ): ChangePasswordResponse
   }
 
   scalar DateTime
@@ -94,6 +98,10 @@ module.exports = gql`
     price: Float
   }
   type ForgotPasswordResponse {
+    success: Boolean
+    message: String
+  }
+  type ChangePasswordResponse {
     success: Boolean
     message: String
   }
