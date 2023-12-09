@@ -104,6 +104,14 @@ module.exports = gql`
     numberOfOrdersMonthly: Int
     month: Int
     year: Int
+    topSellingItems: [TopSellingItem]
+    avgOrderValue: Float
+    bestSellingCategory: String
+    busyTime: DateTime
+  }
+  type TopSellingItem {
+    itemName: String
+    totalQuantity: Int
   }
   type ForgotPasswordResponse {
     success: Boolean

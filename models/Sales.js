@@ -17,6 +17,30 @@ const SalesSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  topSellingItems: [
+    {
+      itemName: {
+        type: String,
+        required: true,
+      },
+      totalQuantity: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
+  averageOrderValue: {
+    type: Number,
+    default: 0,
+  },
+  bestSellingCategory: {
+    type: String,
+    default: null,
+  },
+  busyTime: {
+    type: Number,
+    default: 0,
+  },
   month: {
     type: Number,
     required: true,

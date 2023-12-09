@@ -20,7 +20,7 @@ const ItemSchema = new mongoose.Schema({
   },
   itemRtng: {
     type: Number,
-    default: 5,
+    default: 0,
   },
 });
 
