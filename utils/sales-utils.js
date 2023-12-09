@@ -8,7 +8,7 @@ const calculateSalesData = async () => {
     const now = new Date();
     const lastMonthStart = new Date(
       now.getFullYear(),
-      now.getMonth(),
+      now.getMonth() - 1,
       1,
       0,
       0,
@@ -16,7 +16,7 @@ const calculateSalesData = async () => {
     );
     const currentMonthStart = new Date(
       now.getFullYear(),
-      now.getMonth() + 1,
+      now.getMonth(),
       1,
       0,
       0,
