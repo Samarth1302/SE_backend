@@ -394,7 +394,6 @@ const resolvers = {
       contextValue
     ) => {
       const user = contextValue.user;
-
       try {
         if (!user) {
           throw new GraphQLError("User not authenticated", {
@@ -403,10 +402,11 @@ const resolvers = {
             },
           });
         }
+        const userFromDB = await User.findOne({ email: user.email });
 
         const passwordMatch = await bcrypt.compare(
           currentPassword,
-          user.password
+          userFromDB.password
         );
         if (!passwordMatch) {
           throw new GraphQLError("Incorrect current password", {
@@ -416,8 +416,8 @@ const resolvers = {
           });
         }
         const encryptedNewPassword = await bcrypt.hash(newPassword, 10);
-        user.password = encryptedNewPassword;
-        await user.save();
+        userFromDB.password = encryptedNewPassword;
+        await userFromDB.save();
 
         return {
           success: true,
