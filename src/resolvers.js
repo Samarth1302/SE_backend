@@ -369,7 +369,7 @@ const resolvers = {
           },
         });
       }
-      const newPassword = crypto.randomBytes(8).toString("hex");
+      const newPassword = crypto.randomBytes(3).toString("hex");
       const encryptedPassword = await bcrypt.hash(newPassword, 10);
 
       user.password = encryptedPassword;

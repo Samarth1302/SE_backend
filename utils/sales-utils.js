@@ -6,7 +6,8 @@ const calculateSalesData = async () => {
   try {
     const lastMonthStart = new Date(
       new Date().getFullYear(),
-      new Date().getMonth() - 1,
+      new Date().getMonth(),
+      //new Date().getMonth()-1,
       1,
       0,
       0,
@@ -15,7 +16,8 @@ const calculateSalesData = async () => {
 
     const currentMonthStart = new Date(
       new Date().getFullYear(),
-      new Date().getMonth(),
+      new Date().getMonth() + 1,
+      //new Date().getMonth(),
       1,
       0,
       0,
@@ -30,6 +32,7 @@ const calculateSalesData = async () => {
             $lt: currentMonthStart,
           },
           status: "Completed",
+          orderServedAt: { $ne: null },
         },
       },
       {
@@ -42,6 +45,10 @@ const calculateSalesData = async () => {
       },
     ]);
 
+    const filteredMonthlySalesData = monthlySalesData.filter(
+      (order) => order.orderServedAt !== null
+    );
+
     await Sales.findOneAndUpdate(
       {
         month: lastMonthStart.getMonth() + 1,
@@ -49,19 +56,21 @@ const calculateSalesData = async () => {
       },
       {
         $set: {
-          totalSales: monthlySalesData.length
-            ? monthlySalesData.reduce(
+          totalSales: filteredMonthlySalesData.length
+            ? filteredMonthlySalesData.reduce(
                 (acc, order) => acc + order.totalAmount,
                 0
               )
             : 0,
-          avgOrderCompletionTime: monthlySalesData.length
-            ? monthlySalesData.reduce(
+          avgOrderCompletionTime: filteredMonthlySalesData.length
+            ? filteredMonthlySalesData.reduce(
                 (acc, order) => acc + (order.orderServedAt - order.createdAt),
                 0
-              ) / monthlySalesData.length
+              ) /
+              filteredMonthlySalesData.length /
+              1000
             : 0,
-          numberOfOrdersMonthly: monthlySalesData.length,
+          numberOfOrdersMonthly: filteredMonthlySalesData.length,
           month: lastMonthStart.getMonth() + 1,
           year: lastMonthStart.getFullYear(),
         },
