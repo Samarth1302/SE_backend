@@ -1,6 +1,7 @@
 const Item = require("../models/Item");
 const User = require("../models/User");
 const Order = require("../models/Order");
+const Sales = require("../models/Sales");
 const { GraphQLError } = require("graphql");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -492,6 +493,24 @@ const resolvers = {
             code: "FETCH_EMPLOYEES_ERROR",
           },
         });
+      }
+    },
+    getMonthlySales: async (_, { selectedMonth, selectedYear }) => {
+      try {
+        const monthlySalesData = await Sales.findOne({
+          month: selectedMonth,
+          year: selectedYear,
+        });
+
+        if (!monthlySalesData) {
+          throw new GraphQLError("Monthly sales data not found");
+        }
+
+        return monthlySalesData;
+      } catch (error) {
+        throw new GraphQLError(
+          `Error fetching monthly sales data: ${error.message}`
+        );
       }
     },
   },

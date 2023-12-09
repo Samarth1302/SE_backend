@@ -6,6 +6,7 @@ module.exports = gql`
     userOrders: [Order]
     findOrder(orderId: ID!): Order
     getEmployees: [User]
+    getMonthlySales(selectedMonth: Int, selectedYear: Int): MonthlySales
   }
 
   type Mutation {
@@ -96,6 +97,13 @@ module.exports = gql`
     name: String
     quantity: Int
     price: Float
+  }
+  type MonthlySales {
+    totalSales: Float
+    avgOrderCompletionTime: Float
+    numberOfOrdersMonthly: Int
+    month: Int
+    year: Int
   }
   type ForgotPasswordResponse {
     success: Boolean
