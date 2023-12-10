@@ -2,23 +2,38 @@ const { gql } = require("graphql-tag");
 
 module.exports = gql`
   type Query {
+    # Fetch all items in the menu
     allItems: [Item]
+    # Fetch orders for the logged-in user
     userOrders: [Order]
+    # Find an order by its ID
     findOrder(orderId: ID!): Order
+    # Get a list of employees
     getEmployees: [User]
+    # Get monthly sales statistics
     getMonthlySales(selectedMonth: Int, selectedYear: Int): MonthlySales
   }
 
   type Mutation {
+    # User signup
     signup(signupInput: signupInput): User
+    # User login
     login(loginInput: loginInput): User
+    # Register an employee (admin only)
     registerEmployee(signupInput: signupInput): User
+    # Add a new item to the menu (admin only)
     addItem(itemInput: itemInput): Item
+    # Place a new order
     placeOrder(orderInput: orderInput): Order
+    # Change the status of an order (admin/employee only)
     changeOrderStatus(orderId: ID!, newStatus: String!): Order
+    # Delete an item from the menu (admin only)
     deleteItem(itemId: ID!): Item
+    # Delete an employee (admin only)
     deleteEmployee(userId: ID!): User
+    # Initiate password reset process
     forgotPassword(email: String!): ForgotPasswordResponse
+    # Change user password
     changePassword(
       currentPassword: String
       newPassword: String
