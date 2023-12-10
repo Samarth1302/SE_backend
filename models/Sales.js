@@ -29,7 +29,7 @@ const SalesSchema = new mongoose.Schema({
       },
     },
   ],
-  averageOrderValue: {
+  avgOrderValue: {
     type: Number,
     default: 0,
   },

@@ -73,7 +73,7 @@ const calculateSalesData = async () => {
       (order) => order.orderServedAt !== null
     );
 
-    const averageOrderValue =
+    const avgOrderValue =
       filteredMonthlySalesData.length > 0
         ? filteredMonthlySalesData.reduce(
             (acc, order) => acc + order.totalAmount,
@@ -138,7 +138,7 @@ const calculateSalesData = async () => {
         itemName: item._id,
         totalQuantity: item.totalQuantity,
       })),
-      averageOrderValue,
+      avgOrderValue,
       bestSellingCategory: bestSellingCategory.length
         ? bestSellingCategory[0]._id
         : null,
