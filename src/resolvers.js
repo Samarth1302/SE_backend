@@ -280,6 +280,8 @@ const resolvers = {
         } else if (newStatus === "Completed" && order.status !== "Completed") {
           order.status = "Completed";
           order.orderCompletedAt = new Date().toISOString();
+        } else if (newStatus === "Cancelled" && order.status !== "Cancelled") {
+          order.status = "Cancelled";
         }
         const res = await order.save();
         return {
